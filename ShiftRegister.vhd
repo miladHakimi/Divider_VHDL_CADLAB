@@ -1,18 +1,19 @@
 entity Reg is
   generic(
-  	size: integer := 10
+  	size: integer := 9
   	);
   port (
 	clk: in std_logic,
 	rst: in std_logic,
 	load: in std_logic,
+	
 	shiftEn: in std_logic,
 	serialEn: in std_logic,
 	5inputEn: in std_logic,
 
 	5inputIn: in signed(4 downto 0);
-	dataIn: in signed(size-1 downto 0),
-	serialIn: in signed(size-1 downto 0),
+	dataIn: in signed(size-2 downto 0),
+	serialIn: in std_logic,
 
 	dataOut: out signed(size-1 downto 0)
   ) ;
