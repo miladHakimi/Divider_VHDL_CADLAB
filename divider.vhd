@@ -1,60 +1,71 @@
-entity divider_DP is
-  generic(
-  	divisor_size: integer := 4,
-  	dividend_size: integer := 8,
-  	quotient_size: integer := 4,
-  	remainder_size: integer := 4
-  );
+Library work;
+Library IEEE;
+
+
+Use IEEE.STD_LOGIC_1164.All;
+use ieee.numeric_std.all;
+
+entity divider is
   port (
-	clk: in std_logic,
-	rst: in std_logic,
-	
-	dividend: in signed(dividend_size-1 downto 0),
-	divisor: in signed(divisor_size-1 downto 0),
+	clk : in std_logic;
+	rst : in std_logic;
 
-	ld_5input : in std_logic,
-	ldinput : in std_logic,
-	shiftEn	: in std_logic,
-	ser_en : in std_logic,
-	done : in std_logic,
-	ld2 : in std_logic,
+	start : in std_logic;
 
-	cnt_done : in std_logic,
-	pos : in std_logic,
+	dividend : in unsigned(8-1 downto 0);
+	divisor: in unsigned(4-1 downto 0);
 
-	remainder: out unsigned(remainder_size-1 downto 0),
-	quotient: out unsigned(quotient_size-1 downto 0),
+	quotient : out unsigned(3 downto 0);
+	remainder : out unsigned(3 downto 0);
 
-	overflow: out std_logic,
-	done: out std_logic
-
+	done : out std_logic
   ) ;
 end entity ; -- divider
 
 architecture behavioral of divider is
 
-	signal comp: signed(4 downto 0);
-	signal regOut: signed(8 downto 0);
-	signal 5inputs: signed(4 downto 0);
-	signal signed(8 downto 0);
-begin
+	signal cnt_done, cpm_res, dividend_ld, shiftEn, ser_en, divisor_ld, ld_remainder, cnt_en, ld_divisor: std_logic;
 
-------------------------------- Data path ---------------------------------
-	comp <= not divisor+1;
-	shifReg : entity work.shiftRegister
-	  port (
+begin
+	datapath: entity work.divider_DP
+	port map(
 		clk => clk,
 		rst => rst,
-		load => ldinput,
-		shiftEn => shiftEn,
-		serialEn => ser_en,
-		5inputEn => ld_5input,
+		
+		dividend => dividend,
+		divisor => divisor,
 
-		5inputIn => 5inputs,
-		dataIn => init_data,
-		serialIn => ser_in,
+		divisor_ld => divisor_ld,
+		ld_remainder => ld_remainder,
+		ldinput => dividend_ld,
+		shiftEn	=> shiftEn,
+		cnt_en => cnt_en,
+		ser_en => ser_en,
 
-		dataOut => regOut
-	  ) ;
-	  
+		cnt_done => cnt_done,
+		
+		remainder => remainder,
+		quotient => quotient,
+
+		comp => cpm_res
+  	);
+
+	controller_divider: entity work.divider_controller
+	port map (
+		clk => clk,
+		rst => rst,
+
+		cnt_done => cnt_done,
+		start => start, 
+		cpm_res => cpm_res,
+
+		ld_remainder => ld_remainder,
+		ldinput => dividend_ld,
+		shiftEn	=> shiftEn,
+		ser_en => ser_en,
+
+		done => done, 
+		divisor_ld => divisor_ld,
+		cnt_en => cnt_en
+  );
 end architecture ; -- behavioral
