@@ -6,18 +6,22 @@ Use IEEE.STD_LOGIC_1164.All;
 use ieee.numeric_std.all;
 
 entity divider is
+  generic(
+  		dividend_size : integer := 9;
+  		divisor_size : integer := 5
+  	);
   port (
 	clk : in std_logic;
 	rst : in std_logic;
 
 	start : in std_logic;
 
-	dividend : in unsigned(8-1 downto 0);
-	divisor: in unsigned(4-1 downto 0);
+	dividend : in signed(dividend_size-1 downto 0);
+	divisor: in signed(divisor_size-1 downto 0);
 
-	quotient : out unsigned(3 downto 0);
-	remainder : out unsigned(3 downto 0);
-
+	quotient : out signed(4 downto 0);
+	remainder : out signed(4 downto 0);
+	overflow : out std_logic;
 	done : out std_logic
   ) ;
 end entity ; -- divider
@@ -46,7 +50,7 @@ begin
 		
 		remainder => remainder,
 		quotient => quotient,
-
+		overflow => overflow,
 		comp => cpm_res
   	);
 

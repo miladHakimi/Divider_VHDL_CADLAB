@@ -9,12 +9,14 @@ end entity ; -- devider_TB
 
 architecture behavioral of devider_TB is
 	constant half_period : time := 50 ns;
+
 	signal f :	integer := 0;
 	signal clk  : std_logic := '0';
   	signal rst  : std_logic := '0';
-  	signal done, start : std_logic;
-  	signal dividend : unsigned(8-1 downto 0);
-	signal divisor, quotient, remainder: unsigned(4-1 downto 0);
+  	signal done, start, overflow : std_logic;
+  	signal dividend : signed(8 downto 0);
+	signal  quotient, remainder: signed(4 downto 0);
+	signal divisor : signed(4 downto 0);
 
 begin
 	clk <= not clk after half_period when done/='1' else
@@ -31,6 +33,7 @@ begin
 
 		quotient => quotient,
 		remainder => remainder,
+		overflow => overflow,
 		done => done
 	);
 
@@ -44,8 +47,8 @@ begin
 		start <= '1';
 		wait for 120 ns;
 		start <= '0';
-		dividend <= to_unsigned(73, 8);
-		divisor <= to_unsigned(6, 4);
+		dividend <= to_signed(-99, 9);
+		divisor <= to_signed(-6, 5);
 		wait;      
 	end process;
 
